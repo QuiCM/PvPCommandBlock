@@ -14,7 +14,7 @@ namespace PvPCommandBlock
     [ApiVersion(1, 14)]
     public class Maincs : TerrariaPlugin
     {
-        public static bool isToggled = true;
+        public static bool isToggled;
 
         public override string Author
         { get { return "WhiteX"; } }
