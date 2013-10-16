@@ -72,7 +72,6 @@ namespace PvPCommandBlock
             if (isToggled)
                 if (Maincs.config.ExemptCommands.Contains(args.Text))
                 {
-                    args.Handled = true;
                 }
                 else if (args.Text.StartsWith("/") && !TShock.Players[args.Who].Group.HasPermission("pvp.block") &&
                     TShock.Players[args.Who].TPlayer.hostile)
