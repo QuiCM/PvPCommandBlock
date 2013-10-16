@@ -16,8 +16,8 @@ namespace PvPCommandBlock
     public class Maincs : TerrariaPlugin
     {
         public static bool isToggled;
-        //public static Config config { get; set; }
-        //public static string configPath { get { return Path.Combine(TShock.SavePath, "PvPBlock.json"); } }
+        public static Config config { get; set; }
+        public static string configPath { get { return Path.Combine(TShock.SavePath, "PvPCmdConfig.json"); } }
 
         public override string Author
         { get { return "WhiteX"; } }
@@ -26,7 +26,7 @@ namespace PvPCommandBlock
         { get { return "Blocks commands while in PvP"; } }
 
         public override string Name
-        { get { return "PvPcmdBlock"; } }
+        { get { return "PvPCmdBlock"; } }
 
         public override Version Version
         { get { return Assembly.GetExecutingAssembly().GetName().Version; } }
@@ -57,47 +57,54 @@ namespace PvPCommandBlock
         {
             Order = 100;
 
-            //config = new Config();
+            config = new Config();
         }
 
         public void onInitialize(EventArgs args)
         {
             Commands.ChatCommands.Add(new Command("pvp.block", Toggle, "toggleblock"));
 
-            //SetUpConfig();
+            SetUpConfig();
         }
 
         public void OnChat(ServerChatEventArgs args)
         {
             if (isToggled)
-                if (args.Text.StartsWith("/") && !TShock.Players[args.Who].Group.HasPermission("pvp.block") &&
-                    TShock.Players[args.Who].TPlayer.hostile)
+                if (Maincs.config.ExemptCommands.Contains(args.Text))
+                {
                     args.Handled = true;
+                }
+                else if (args.Text.StartsWith("/") && !TShock.Players[args.Who].Group.HasPermission("pvp.block") &&
+                    TShock.Players[args.Who].TPlayer.hostile)
+                {
+                    TShock.Players[args.Who].SendErrorMessage("That command is blocked while in PvP!");
+                    args.Handled = true;
+                }
         }
 
         public void Toggle(CommandArgs args)
         {
             isToggled = !isToggled;
 
-            args.Player.SendSuccessMessage((isToggled ? "" : "Un") + "blocked commands while in PvP");
+            args.Player.SendSuccessMessage((isToggled ? "B" : "Unb") + "locked commands while in PvP");
         }
 
 
-        //public void SetUpConfig()
-        //{
-        //    try
-        //    {
-        //        if (File.Exists(configPath))
-        //            config = Config.Read(configPath);
-        //        else
-        //            config.Write(configPath);
-        //    }
-        //    catch
-        //    {
-        //        Console.ForegroundColor = ConsoleColor.Red;
-        //        Console.WriteLine("Error in PvPBlock.json!");
-        //        Console.ResetColor();
-        //    }
-        //}
+        public void SetUpConfig()
+        {
+            try
+            {
+                if (File.Exists(configPath))
+                    config = Config.Read(configPath);
+                else
+                    config.Write(configPath);
+            }
+            catch
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Error in PvPBlock.json!");
+                Console.ResetColor();
+            }
+        }
     }
 }

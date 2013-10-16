@@ -10,7 +10,7 @@ namespace PvPCommandBlock
 {
     public class Config
     {
-        public List<string> ExemptCommands = new List<string>();
+        public List<string> ExemptCommands = new List<string>() {"/p","/me","/help","/party","/motd","/aliases","/playing","/rules"};
 
         public static Config Read(string path)
         {
