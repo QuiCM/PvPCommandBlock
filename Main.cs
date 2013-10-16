@@ -20,7 +20,7 @@ namespace PvPCommandBlock
         public static string configPath { get { return Path.Combine(TShock.SavePath, "PvPCmdConfig.json"); } }
 
         public override string Author
-        { get { return "WhiteX"; } }
+        { get { return "WhiteX, aMoka"; } }
 
         public override string Description
         { get { return "Blocks commands while in PvP"; } }
@@ -63,6 +63,7 @@ namespace PvPCommandBlock
         public void onInitialize(EventArgs args)
         {
             Commands.ChatCommands.Add(new Command("pvp.block", Toggle, "toggleblock"));
+            Commands.ChatCommands.Add(new Command("pvp.reload", Reload, "reloadexempts"));
 
             SetUpConfig();
         }
@@ -70,11 +71,8 @@ namespace PvPCommandBlock
         public void OnChat(ServerChatEventArgs args)
         {
             if (isToggled)
-                if (Maincs.config.ExemptCommands.Contains(args.Text))
-                {
-                }
-                else if (args.Text.StartsWith("/") && !TShock.Players[args.Who].Group.HasPermission("pvp.block") &&
-                    TShock.Players[args.Who].TPlayer.hostile)
+                if (args.Text.StartsWith("/") && !TShock.Players[args.Who].Group.HasPermission("pvp.block") &&
+                    TShock.Players[args.Who].TPlayer.hostile && !config.ExemptCommands.Contains(args.Text))
                 {
                     TShock.Players[args.Who].SendErrorMessage("That command is blocked while in PvP!");
                     args.Handled = true;
@@ -88,6 +86,11 @@ namespace PvPCommandBlock
             args.Player.SendSuccessMessage((isToggled ? "B" : "Unb") + "locked commands while in PvP");
         }
 
+        public void Reload(CommandArgs args)
+        {
+            SetUpConfig();
+            args.Player.SendInfoMessage("Attempted to reload the config file");
+        }
 
         public void SetUpConfig()
         {
