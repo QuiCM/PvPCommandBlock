@@ -4,31 +4,52 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+
 using Newtonsoft.Json;
 
 namespace PvPCommandBlock
 {
-    public class Config
+    public class regionObj
     {
-        public bool toggleAll;
-        public bool toggleRegions;
-        public List<string> ExemptCommands = new List<string>() {"/p","/me","/help","/party","/motd","/aliases","/playing","/rules"};
+        public string Name;
+        public bool BlockCmds;
 
-        public static Config Read(string path)
+        public regionObj(string na, bool block)
+        {
+            Name = na;
+            BlockCmds = block;
+        }
+    }
+
+    public class RegionSet
+    {
+        public List<regionObj> regionList;
+
+        public RegionSet(List<regionObj> regionList)
+        {
+            this.regionList = regionList;
+        }
+    }
+
+    public class rConfig
+    {
+        public List<RegionSet> RegionConfiguration;
+
+        public static rConfig Read(string path)
         {
             if (!File.Exists(path))
-                return new Config();
+                return new rConfig();
             using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 return Read(fs);
             }
         }
 
-        public static Config Read(Stream stream)
+        public static rConfig Read(Stream stream)
         {
             using (var sr = new StreamReader(stream))
             {
-                var cf = JsonConvert.DeserializeObject<Config>(sr.ReadToEnd());
+                var cf = JsonConvert.DeserializeObject<rConfig>(sr.ReadToEnd());
                 if (ConfigRead != null)
                     ConfigRead(cf);
                 return cf;
@@ -45,6 +66,9 @@ namespace PvPCommandBlock
 
         public void Write(Stream stream)
         {
+            RegionConfiguration = new List<RegionSet>();
+            RegionConfiguration.Add(new RegionSet(Maincs.regions));
+
             var str = JsonConvert.SerializeObject(this, Formatting.Indented);
             using (var sw = new StreamWriter(stream))
             {
@@ -52,6 +76,6 @@ namespace PvPCommandBlock
             }
         }
 
-        public static Action<Config> ConfigRead;
+        public static Action<rConfig> ConfigRead;
     }
 }
