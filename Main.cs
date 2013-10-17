@@ -18,8 +18,9 @@ namespace PvPCommandBlock
     {
         public static Config config { get; set; }
         public static rConfig rConfig { get; set; }
-        public static string configPath { get { return Path.Combine(TShock.SavePath, "PvPBlock/PvPCmdConfig.json"); } }
-        public static string regionPath { get { return Path.Combine(TShock.SavePath, "PvPBlock/PvPRegions.json"); } }
+        public static string directoryPath { get { return Path.Combine(TShock.SavePath, "PvPBlock"); } }
+        public static string configPath { get { return Path.Combine(directoryPath, "PvPCmdConfig.json"); } }
+        public static string regionPath { get { return Path.Combine(directoryPath, "PvPRegions.json"); } }
 
         public static List<TShockAPI.DB.Region> confirmedRegions = new List<TShockAPI.DB.Region>();
         
@@ -294,6 +295,9 @@ namespace PvPCommandBlock
         {
             try
             {
+                if (!Directory.Exists(directoryPath))
+                    Directory.CreateDirectory(directoryPath);
+
                 if (File.Exists(configPath))
                     config = Config.Read(configPath);
                 else
