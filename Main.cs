@@ -13,7 +13,7 @@ using TShockAPI.DB;
 
 namespace PvPCommandBlock
 {
-    [ApiVersion(1, 14)]
+    [ApiVersion(1, 15)]
     public class Maincs : TerrariaPlugin
     {
         public static Config config { get; set; }
